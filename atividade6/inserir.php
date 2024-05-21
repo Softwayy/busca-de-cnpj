@@ -1,23 +1,25 @@
 <?php
-// Recebendo os dados do formulário
-$id = $_POST['id'];
+include('conexao.php');
+
 $fornecedor = $_POST['fornecedor'];
 $cnpj = $_POST['cnpj'];
 $telefone = $_POST['telefone'];
 $email = $_POST['email'];
 
-// Preparando a consulta SQL para inserir os dados na tabela
-$sql = "INSERT INTO fornecedores (id, fornecedor, cnpj, telefone, email)
-        VALUES ('$id', '$fornecedor', '$cnpj', '$telefone', '$email')";
+$check_sql = "SELECT * FROM fornecedores WHERE cnpj = '$cnpj'";
+$result = $mysqli->query($check_sql);
 
-// Executando a consulta SQL
-if ($mysqli->query($sql) === TRUE) {
-    echo "Dados salvos com sucesso!";
+if ($result->num_rows > 0) {
+    echo "<script>alert('Erro: CNPJ já cadastrado.'); window.location.href = 'form.php';</script>";
 } else {
-    echo "Erro ao salvar os dados: " . $mysqli->error;
+    $sql = "INSERT INTO fornecedores (fornecedor, cnpj, telefone, email) VALUES ('$fornecedor', '$cnpj', '$telefone', '$email')";
+
+    if ($mysqli->query($sql) === TRUE) {
+        echo "<script>alert('Dados salvos com sucesso!'); window.location.href = 'form.php';</script>";
+    } else {
+        echo "<script>alert('Erro ao salvar os dados: " . $mysqli->error . "'); window.location.href = 'form.php';</script>";
+    }
 }
 
-// Fechando a conexão com o banco de dados
 $mysqli->close();
-
 ?>
